@@ -1,0 +1,34 @@
+#!/bin/bash
+# Postinstall script for Cult Connector - AE x Crowdin
+# Copies the script to all installed Adobe After Effects ScriptUI Panels folders.
+
+set -e
+SCRIPT_NAME='Cult Connector (AE ↔ Crowdin).jsxbin'
+SRC="/tmp/CultConnectorInstall/$SCRIPT_NAME"
+
+if [ ! -f "$SRC" ]; then
+    echo "Error: Installer payload not found at $SRC"
+    exit 1
+fi
+
+INSTALLED=0
+for ae_app in "/Applications/Adobe After Effects "*/; do
+    if [ -d "$ae_app" ]; then
+        PANELS="${ae_app}Scripts/ScriptUI Panels"
+        if [ -d "$PANELS" ]; then
+            cp "$SRC" "$PANELS/$SCRIPT_NAME"
+            echo "Installed to $PANELS"
+            INSTALLED=1
+        fi
+    fi
+done
+
+# Clean up temporary payload
+rm -rf /tmp/CultConnectorInstall
+
+if [ $INSTALLED -eq 0 ]; then
+    echo "Note: No Adobe After Effects installation found. The script was not installed."
+    echo "Install After Effects first, then run this installer again."
+fi
+
+exit 0
